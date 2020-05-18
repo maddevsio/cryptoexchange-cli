@@ -3,12 +3,17 @@
 
 require 'bundler/setup'
 require 'cryptoexchange'
+require 'logger'
 
-client = Cryptoexchange::Client.new
+logger = Logger.new(STDOUT)
 dce = ARGV[0]
 
 begin
-  pairs = client.pairs(dce)
+  abort 'Enter DCE' if dce.nil? || dce == ''
+  pairs = Cryptoexchange::Client.new.pairs(dce)
+rescue StandardError => e
+  logger.error(e.message)
+  logger.error(e.backtrace.join("\n"))
+else
   pairs.each { |p| puts "#{p.base}-#{p.target}" }
-rescue
 end
